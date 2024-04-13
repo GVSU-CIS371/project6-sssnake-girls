@@ -62,8 +62,10 @@
 
   const products = computed(() => myStore.products || []);
 
-  // TODO: implement onClick function for creating an item in
-  //        firestore
+  function createItem(){
+    // TODO: implement onClick function for creating an item in
+    //  firestore
+  } 
 
 </script>
 ./productStore

@@ -34,12 +34,15 @@
         product: ProductDoc;
     }>();
 
-    // TODO: implement onClick function for delete button that 
-    // confirms user wants to delete, then deletes item from firestore
+    function deleteItme(prod: ProductDoc){
+        // TODO: implement onClick function for delete button that 
+        // confirms user wants to delete, then deletes item from firestore
+    }
 
-    // TODO: implement onClick function for update button that
-    // creates a dialog for user to enter updated item info
-
+    function updateItem(prod: ProductDoc){
+        // TODO: implement onClick function for update button that
+        // creates a dialog for user to enter updated item info
+    }
 </script>
 
 <style scoped>

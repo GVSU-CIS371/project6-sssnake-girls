@@ -1,7 +1,10 @@
-<template>
-  <!-- your answer -->
-</template>
-
 <script lang="ts" setup>
-// your answer
+  import { useItemStore } from "../stores/ProductStore";
+  import { onBeforeMount } from "vue";
+ 
+  const myStore = useItemStore();
+  onBeforeMount(() => {
+    myStore.init();
+  });
 </script>
+./productStore

@@ -4,7 +4,7 @@
             {{ product.data.name }}
         </v-card-title>
 
-    <!-- TODO: Implement Delete Button for firestore-->
+   <button @click="delete">Delete</button>
 
         <v-card-subtitle>
             <span class="mdi mdi-star"></span>
@@ -23,7 +23,7 @@
         </v-card-text>
 
 
-    <!-- TODO: Implement Update Button for firestore-->
+   <button @click="update">Update</button>
 
     </v-card>
 </template>

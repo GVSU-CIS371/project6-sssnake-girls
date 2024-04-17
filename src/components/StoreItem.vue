@@ -4,12 +4,12 @@
             {{ product.data.name }}
         </v-card-title>
 
-   <button @click="delete">Delete</button>
+   <button @click="deleteItemBtn(product)">Delete</button>
 
         <v-card-subtitle>
             <span class="mdi mdi-star"></span>
             {{product.data.rating}} 
-            <span>stars {{ message }}</span>
+            <span>stars <!--{{ message }}--></span>
             <span class="mdi mdi-currency-usd"></span>
             {{product.data.price}} 
             <span class="mdi mdi-store-outline"></span>
@@ -23,27 +23,32 @@
         </v-card-text>
 
 
-   <button @click="updateItem(product)">Update</button>
+   <button @click="updateItemBtn(product)">Update</button>
 
     </v-card>
 </template>
 
 <script lang="ts" setup>
     import { ProductDoc } from '../types/product';
+    import { useItemStore } from '../stores/ProductStore';
+    
     defineProps<{
         product: ProductDoc;
     }>();
 
-    function deleteItem(prod: ProductDoc){
-        // TODO: implement onClick function for delete button that 
-        // confirms user wants to delete, then deletes item from firestore
+    function deleteItemBtn(prod: ProductDoc){
+        const myStore = useItemStore();
+        myStore.deleteItem(prod);
+        myStore.init();
     }
 
-    function updateItem(prod: ProductDoc){
-        // TODO: implement onClick function for update button that
-        // creates a dialog for user to enter updated item info
+    function updateItemBtn(prod: ProductDoc){
+        const myStore = useItemStore();
+        myStore.updateItem(prod);
+        myStore.init();
     }
 </script>
+./productStore
 
 <style scoped>
     .image-container {

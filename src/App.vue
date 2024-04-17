@@ -62,9 +62,14 @@
 
   const products = computed(() => myStore.products || []);
 
-  function createItem(){
-    // TODO: implement onClick function for creating an item in
-    //  firestore
+  function createItemBtn(){
+    //Need a new component for creating an item popup
+    //Take user input from the fields and package it as a ProductDoc,
+    //then, you can pass that ProductDoc into the createItem function below
+    //and it will be posted to the firestore and the app will update
+
+    myStore.createItem(prod);
+    myStore.init();
   } 
 
 </script>

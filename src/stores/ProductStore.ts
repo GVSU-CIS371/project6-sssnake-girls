@@ -11,7 +11,11 @@ import {    getFirestore,
             QueryDocumentSnapshot,
             CollectionReference,
             setDoc,
-            doc
+            doc,
+            deleteDoc,
+            query,
+            updateDoc,
+            where
         } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -39,9 +43,20 @@ export const useItemStore = defineStore("ItemStore", {
         },
         init(){
             const collectionRef = collection(db, 'Products');
+            
+            /*
+            // Bulk creates docs in firestore
+            this.products = initProducts;
+            this.products.forEach(async (pd: any) => {
+                const prodDoc = doc(db, "Products", pd.id);
+                await setDoc(prodDoc, {id: pd.id, data: pd.data});
+            });
+            */
+            
             getDocs(collectionRef).then((qs: QuerySnapshot) => {
                 if (qs.size === 0) {
                     this.products = initProducts;
+                    console.log("Firestore empty, loading backup array")
                 } else {
                     const fetchedProducts: ProductDoc[] = [];
                     qs.forEach((qd: QueryDocumentSnapshot) => {
@@ -50,6 +65,7 @@ export const useItemStore = defineStore("ItemStore", {
                         fetchedProducts.push({ ...productData, id: docId });
                     });
                     this.products = fetchedProducts;
+                    console.log("Firestore successfully loaded")
                 }
             }).catch((error) => {
                 console.error("Error checking if collection is empty: ", error);
@@ -73,11 +89,23 @@ export const useItemStore = defineStore("ItemStore", {
             this.products?.push(prod);
         },
         deleteItem(prod: ProductDoc){
-            //TODO: implement delete function
+            const toRemove = doc(db, `Products/${ prod.id }`);
+            deleteDoc(toRemove).then(() => {
+                console.log(`Product ${ prod.id } removed`);
+            });
         },
         updateItem(prod: ProductDoc){
-            //TODO: implement update function
-        },
+            const myCol: CollectionReference = collection(db, "Products");
+            const qr = query(myCol, where("id","==",prod.id));
+            getDocs(qr).then((qs: QuerySnapshot) => {
+                qs.forEach(async (qd: QueryDocumentSnapshot) => {
+                    const myDoc = doc(db, qd.id);
+                    await updateDoc(myDoc, {id: prod.id, data: prod.data});
+                    console.log(`Product ${qd.id} updated`)
+                });
+            });
+            
+        },  
         async fetchData() {
             await new Promise(resolve => setTimeout(resolve, 1000));
         },

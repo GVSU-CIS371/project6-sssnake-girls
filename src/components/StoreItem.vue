@@ -23,7 +23,7 @@
         </v-card-text>
 
 
-   <button @click="update">Update</button>
+   <button @click="updateItem(product)">Update</button>
 
     </v-card>
 </template>
@@ -34,7 +34,7 @@
         product: ProductDoc;
     }>();
 
-    function deleteItme(prod: ProductDoc){
+    function deleteItem(prod: ProductDoc){
         // TODO: implement onClick function for delete button that 
         // confirms user wants to delete, then deletes item from firestore
     }

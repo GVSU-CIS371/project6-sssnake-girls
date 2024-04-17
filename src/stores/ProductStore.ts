@@ -1,13 +1,17 @@
 import { defineStore } from "pinia"
 import { ProductDoc } from "../types/product";
 import { initProducts } from "../data-init";
-import { initializeApp, FirebaseApp } from "firebase/app";
+import { initializeApp/*, FirebaseApp*/ } from "firebase/app";
 import {    getFirestore,
             Firestore,
             getDocs,
+            addDoc,
             collection,
             QuerySnapshot,
-            QueryDocumentSnapshot
+            QueryDocumentSnapshot,
+            CollectionReference,
+            setDoc,
+            doc
         } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -34,10 +38,9 @@ export const useItemStore = defineStore("ItemStore", {
             this.count++
         },
         init(){
-            const collectionRef = collection(db, 'Products'); // Replace 'products' with your collection name
+            const collectionRef = collection(db, 'Products');
             getDocs(collectionRef).then((qs: QuerySnapshot) => {
                 if (qs.size === 0) {
-                    // Collection is empty, initialize with default data
                     this.products = initProducts;
                 } else {
                     const fetchedProducts: ProductDoc[] = [];
@@ -51,14 +54,23 @@ export const useItemStore = defineStore("ItemStore", {
             }).catch((error) => {
                 console.error("Error checking if collection is empty: ", error);
             });
-            //TODO: make initProducts run if firestore empty, otherwise load firebase
-            //this.products = initProducts;
         },
         filterByCategory(cat: string){
             this.products = initProducts.filter((prod) => prod.data.category == cat)
         },  
         filterByRating(minRating: number){
             this.products = initProducts.filter((prod) => prod.data.rating >= minRating)
+        },
+        createItem(prod: ProductDoc){
+            const myColl: CollectionReference = collection(db, "Products");
+            addDoc(myColl, {id: prod.id, data: prod.data})
+                .then(() => {
+                    console.log("New doc added");
+                })
+                .catch((err: any) => {
+                    console.log("Error adding new doc",err)
+                });
+            this.products?.push(prod);
         },
         deleteItem(prod: ProductDoc){
             //TODO: implement delete function

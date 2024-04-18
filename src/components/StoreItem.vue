@@ -1,5 +1,5 @@
 <template>
-        <v-card-title>
+        <v-card-title class="clickable" @click="showDetails()">
             {{ product.data.name }}
         </v-card-title>
 
@@ -7,7 +7,7 @@
         <v-card-subtitle>
             <span class="mdi mdi-star"></span>
             {{product.data.rating}} 
-            <span>stars <!--{{ message }}--></span>
+            <span>Stars</span>
             <span class="mdi mdi-currency-usd"></span>
             {{product.data.price}} 
             <span class="mdi mdi-store-outline"></span>
@@ -17,12 +17,51 @@
             <button class="mdi mdi-delete" @click="showDeleteMenu(product)">    Delete</button>
             <button class="mdi mdi-update" @click="showUpdateMenu(product)">    Update</button>
         </v-row>
-        <div class="image-container">
+        <div class="image-container clickable" @click="showDetails()">
             <v-img :src="product.data.image" alt="Product Image" class="image" />
         </div>
         <v-card-text>
         {{product.data.description}}
         </v-card-text>
+
+        <!-- Show Item Detail Dialog -->
+
+        <v-dialog v-model="detailDialog" max-width="500px" max-height="500px">
+            <v-card>
+            <v-card-title class="d-flex justify-space-between">
+                {{ product.data.name }}
+                - Item ID#
+                {{ product.id }}
+                <v-icon
+                icon="mdi-close-circle"
+                class="me-2"
+                size="small"
+                @click="closeDetailView"
+                >
+                </v-icon>
+            </v-card-title>
+            <v-card-text>
+                <v-row>
+                <v-col cols="6">
+                    <v-row>
+                    Rating: {{ product.data.rating }}
+                    </v-row>
+
+                    <!-- display other product.data here -->
+
+                </v-col>
+                <v-col cols="6">
+                    <div class="image-container">
+                        <!-- maybe increase image size here? -->
+                        <v-img :src="product.data.image" alt="Product Image" class="image" />
+                    </div>  
+                </v-col>
+                </v-row>
+            </v-card-text>
+            </v-card>
+        </v-dialog>
+
+        <!-- Update Dialog -->
 
         <v-dialog v-model="updateDialog" max-width="500px" max-height="500px">
           <v-card>
@@ -38,12 +77,6 @@
             </v-card-title>
             <v-card-text>
               <v-row>
-
-                <!-- TODO: 
-                    Need to capture the data from these text fields to make
-                    a new ProductDoc and pass that into updateItemSubmit()
-                -->
-
                 <v-col cols="6">
                   <v-text-field v-model="name" label="Name"></v-text-field>
                 </v-col>
@@ -56,9 +89,15 @@
                 <v-col cols="6">
                   <v-text-field v-model="stock" label="Stock"></v-text-field>
                 </v-col>
-              </v-row>
+                <v-col>
+                  <v-text-field v-model="category" label="Category"></v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field v-model="image" label="Link to Image"></v-text-field>
+                </v-col>
+                </v-row>
               <v-row>
-                <v-text-field v-model="image" label="Link to Image"></v-text-field>
+                <v-text-field v-model="description" label="Description"></v-text-field>
               </v-row>
             </v-card-text>
             <v-footer class="button-row">
@@ -70,6 +109,8 @@
             </v-footer>
           </v-card>
         </v-dialog>
+
+        <!-- Delete Dialog -->
 
         <v-dialog v-model="deleteDialog" max-width="500px" max-height="500px">
           <v-card>
@@ -100,8 +141,6 @@
             </v-footer>
           </v-card>
         </v-dialog>
-
-   
 </template>
 
 <script lang="ts" setup>
@@ -112,8 +151,8 @@
     defineProps<{
         product: ProductDoc;
     }>();
-
     
+    const detailDialog = ref(false);
     const updateDialog = ref(false);
     const deleteDialog = ref(false);
     const id = ref();
@@ -121,7 +160,17 @@
     const rating = ref('');
     const price = ref('');
     const stock = ref('');
+    const category = ref('');
     const image = ref('');
+    const description = ref('');
+
+    function showDetails(){
+        detailDialog.value = true;
+    }
+
+    function closeDetailView(){
+    detailDialog.value = false;
+    }
 
     function showDeleteMenu(prod: ProductDoc){
         id.value = prod.id
@@ -146,19 +195,23 @@
         rating.value = prod.data.rating.toString()
         price.value = prod.data.price.toString()
         stock.value = prod.data.stock.toString()
+        category.value = prod.data.category
         image.value = prod.data.image
+        description.value = prod.data.description
         updateDialog.value = true;
     }
 
     function updateItemSubmit(){
         const prod: ProductDoc = {
-            id: id,
+            id: id.value,
             data: {
-                name: name,
-                rating: rating,
-                price: price,
-                stock: stock,
-                image: image
+                name: name.value,
+                rating: Number(rating.value),
+                price: Number(price.value),
+                stock: Number(stock.value),
+                category: category.value,
+                image: image.value,
+                description: description.value,
             }
         }
 
@@ -198,6 +251,10 @@
 
     .button-row button {
         margin: 0 10px; /* Add some spacing between buttons */
+    }
+
+    .clickable {
+        cursor: pointer;
     }
     
 </style>

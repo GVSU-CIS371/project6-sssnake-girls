@@ -1,20 +1,22 @@
 <template>
   <v-app>
-    <v-app-bar class="bg-blue-darken-4">
-      <v-toolbar-title>My Online Store</v-toolbar-title>
+    <v-app-bar class="bg-pink-darken-4">
+      <v-toolbar-title>
+        <img :src='logo' alt="Sssnake Girls Superstore" class="logo-image" />
+     </v-toolbar-title>
       <v-btn class="mx-5" v-for="link in links" :key="link.text" :to="link.to">
         <v-icon>{{ link.icon }}</v-icon>
         {{ link.text }}
       </v-btn>
     </v-app-bar>
-    <v-main class="bg-blue-lighten-5">
+    <v-main class="bg-pink-lighten-5">
 
       <!-- Create New Item Dialog -->
 
         <v-dialog v-model="createDialog" max-width="500px" max-height="500px">
           <v-card>
             <v-card-title class="d-flex justify-space-between">
-              Creating New Item
+              Creating New Item {{ products.length+1 }}
               <v-icon
                 icon="mdi-close-circle"
                 class="me-2"
@@ -37,15 +39,21 @@
                 <v-col cols="6">
                   <v-text-field v-model="stock" label="Stock"></v-text-field>
                 </v-col>
+                <v-col>
+                  <v-text-field v-model="category" label="Category"></v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field v-model="image" label="Link to Image"></v-text-field>
+                </v-col>
               </v-row>
               <v-row>
-                <v-text-field v-model="image" label="Link to Image"></v-text-field>
+                <v-text-field v-model="description" label="Description"></v-text-field>
               </v-row>
-                <span class="align-center">
-                  <button class="mdi mdi-check" @click="createItemBtn">
-                    Done
-                  </button>
-                </span>
+              <span class="align-center">
+                <button class="mdi mdi-check" @click="createItemBtn">
+                  Done
+                </button>
+              </span>
             </v-card-text>
           </v-card>
         </v-dialog>
@@ -89,7 +97,7 @@
       </router-view>
     </v-main>
 
-    <v-footer color="primary" app>
+    <v-footer class="bg-pink-darken-4" app>
       © 2023 My Online Store. All rights reserved.
     </v-footer>
   </v-app>
@@ -100,19 +108,23 @@
   import { useItemStore } from "./stores/ProductStore";
   import { onBeforeMount } from "vue";
   import StoreItem from "./components/StoreItem.vue";
-//import { displayPartsToString } from "typescript";
+  import { ProductDoc } from "./types/product";
+
+  const logo = 'src/assets/logo.gif';
 
   const myStore = useItemStore();
   onBeforeMount(() => {
     myStore.init();
   });
-
+  
   const createDialog = ref(false);
   const name = ref('');
   const rating = ref('');
   const price = ref('');
   const stock = ref('');
+  const category = ref('');
   const image = ref('');
+  const description = ref('');
 
   const links = ref([
     { text: "Home", to: "/", icon: "mdi-home" },
@@ -125,24 +137,21 @@
   const products = computed(() => myStore.products || []);
 
   function createItemBtn(){
-    //Need a new component for creating an item popup
-    //Take user input from the fields and package it as a ProductDoc,
-    //then, you can pass that ProductDoc into the createItem function below
-    //and it will be posted to the firestore and the app will update
-
     const prod: ProductDoc = {
-            id: id,
+            id: `${products.value.length+1}`,
             data: {
-                name: name,
-                rating: rating,
-                price: price,
-                stock: stock,
-                image: image
+                name: name.value,
+                rating: Number(rating.value),
+                price: Number(price.value),
+                stock: Number(stock.value),
+                category: category.value,
+                image: image.value,
+                description: description.value,
             }
         }
 
-    //myStore.createItem(prod);
-    //myStore.init();
+    myStore.createItem(prod);
+    myStore.init();
     createDialog.value = false;
   } 
 
@@ -158,6 +167,11 @@
 ./productStore
 
 <style scoped>
+  .logo-image {
+    max-height: 200px;
+    width: auto;
+  }
+
   .product-row {
     display: flex;
     flex-wrap: wrap;
@@ -172,16 +186,16 @@
   }
 
   .product-card {
-    width: 100%; /* Ensure the card occupies full width */
-    height: 550px; /* Set a fixed height for the card */
-    margin-bottom: 10px; /* Add some margin between cards */
+    width: 100%;
+    height: 550px;
+    margin-bottom: 10px;
   }
   
   .align-center {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center content vertically */
-    align-items: center; /* Center content horizontally */
-    height: 100%; /* Ensure card text is centered vertically */
+    justify-content: center;
+    align-items: center;
+    height: 100%;
   }
 </style>

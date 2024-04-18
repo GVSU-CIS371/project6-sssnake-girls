@@ -5,17 +5,14 @@ import { initializeApp/*, FirebaseApp*/ } from "firebase/app";
 import {    getFirestore,
             Firestore,
             getDocs,
-            addDoc,
             collection,
             QuerySnapshot,
             QueryDocumentSnapshot,
-            CollectionReference,
             setDoc,
             doc,
             deleteDoc,
-            query,
             updateDoc,
-            where
+            DocumentReference
         } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -72,20 +69,36 @@ export const useItemStore = defineStore("ItemStore", {
             });
         },
         filterByCategory(cat: string){
-            this.products = initProducts.filter((prod) => prod.data.category == cat)
+            getDocs(collection(db, 'Products')).then((qs: QuerySnapshot) => {
+                if (qs.size === 0) {
+                    this.products = initProducts;
+                    console.log("Firestore empty, loading backup array")
+                } else {
+                    const fetchedProducts: ProductDoc[] = [];
+                    qs.forEach((qd: QueryDocumentSnapshot) => {
+                        const productData = qd.data() as ProductDoc;
+                        const docId = qd.id;
+                        fetchedProducts.push({ ...productData, id: docId });
+                    });
+                    this.products = fetchedProducts;
+                    console.log("Firestore successfully reloaded")
+                }
+            }).catch((error) => {
+                console.error("Error checking if collection is empty: ", error);
+            });
+            var newProds = this.products
+            this.products = newProds!.filter((prod) => prod.data.category == cat)
         },  
         filterByRating(minRating: number){
-            this.products = initProducts.filter((prod) => prod.data.rating >= minRating)
+            var newProds = this.products
+            this.products = newProds!.filter((prod) => prod.data.rating >= minRating)
         },
         createItem(prod: ProductDoc){
-            const myColl: CollectionReference = collection(db, "Products");
-            addDoc(myColl, {id: prod.id, data: prod.data})
-                .then(() => {
-                    console.log("New doc added");
-                })
-                .catch((err: any) => {
-                    console.log("Error adding new doc",err)
-                });
+            const myDoc = doc(db, "Products", `${prod.id}`);
+            setDoc(myDoc, {
+                id: prod.id,
+                data: prod.data,
+            })
             this.products?.push(prod);
         },
         deleteItem(prod: ProductDoc){
@@ -95,16 +108,14 @@ export const useItemStore = defineStore("ItemStore", {
             });
         },
         updateItem(prod: ProductDoc){
-            const myCol: CollectionReference = collection(db, "Products");
-            const qr = query(myCol, where("id","==",prod.id));
-            getDocs(qr).then((qs: QuerySnapshot) => {
-                qs.forEach(async (qd: QueryDocumentSnapshot) => {
-                    const myDoc = doc(db, qd.id);
-                    await updateDoc(myDoc, {id: prod.id, data: prod.data});
-                    console.log(`Product ${qd.id} updated`)
-                });
-            });
-            
+            const myDoc: DocumentReference = doc(db, `Products/${prod.id}`);
+            updateDoc(myDoc, {
+                id: prod.id,
+                data: prod.data,
+            }).then(() => {
+                console.log(`Successfully updated item ${prod.id}`)
+            })
+            this.products?.push(prod);
         },  
         async fetchData() {
             await new Promise(resolve => setTimeout(resolve, 1000));

@@ -98,7 +98,7 @@
     </v-main>
 
     <v-footer class="bg-pink-darken-4" app>
-      © 2023 My Online Store. All rights reserved.
+      © 2024 Sssnake Girls SuperStore. All rights reserved.
     </v-footer>
   </v-app>
 </template>

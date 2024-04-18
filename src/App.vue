@@ -110,7 +110,7 @@
   import StoreItem from "./components/StoreItem.vue";
   import { ProductDoc } from "./types/product";
 
-  const logo = 'src/assets/logo.gif';
+  const logo = './src/assets/logo.gif';
 
   const myStore = useItemStore();
   onBeforeMount(() => {

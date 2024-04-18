@@ -9,14 +9,52 @@
     </v-app-bar>
     <v-main class="bg-blue-lighten-5">
 
-      <!-- TODO: Implement Create Item button for firestore 
-            and a new dialogue for entering the item info -->
+      <!-- Create New Item Dialog -->
 
+        <v-dialog v-model="createDialog" max-width="500px" max-height="500px">
+          <v-card>
+            <v-card-title class="d-flex justify-space-between">
+              Creating New Item
+              <v-icon
+                icon="mdi-close-circle"
+                class="me-2"
+                size="small"
+                @click="closeCreateMenu"
+              >
+              </v-icon>
+            </v-card-title>
+            <v-card-text>
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field v-model="name" label="Name"></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="rating" label="Rating"></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="price" label="Price"></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="stock" label="Stock"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-text-field v-model="image" label="Link to Image"></v-text-field>
+              </v-row>
+                <span class="align-center">
+                  <button class="mdi mdi-check" @click="createItemBtn">
+                    Done
+                  </button>
+                </span>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+            
       <router-view v-slot="{ Component }">
         <transition name="shrink-explode">
           <v-container>
             <template v-if="products && products.length">
-            <v-row>
+            <v-row class="product-row">
               <v-col
                 v-for="product in products"
                 :key="product.id"
@@ -26,7 +64,23 @@
                 lg="3"    
               >
                 <Component :is="Component"></Component>
-                <StoreItem :product="product" />
+                <v-card class="product-card">
+                  <StoreItem :product="product" />
+                </v-card>
+                </v-col>
+
+              <v-col
+                cols="12"  
+                sm="6"    
+                md="4"    
+                lg="3"    
+              >
+                <v-card class="product-card" @click="showCreateMenu()">
+                  <v-card-text class="text-center align-center">
+                    <v-icon icon="mdi-plus" class="me-2" size="128"> </v-icon>
+                    <h1>Add New Item</h1>
+                  </v-card-text>
+                </v-card>
               </v-col>
             </v-row>
             </template>
@@ -46,11 +100,19 @@
   import { useItemStore } from "./stores/ProductStore";
   import { onBeforeMount } from "vue";
   import StoreItem from "./components/StoreItem.vue";
+//import { displayPartsToString } from "typescript";
 
   const myStore = useItemStore();
   onBeforeMount(() => {
     myStore.init();
   });
+
+  const createDialog = ref(false);
+  const name = ref('');
+  const rating = ref('');
+  const price = ref('');
+  const stock = ref('');
+  const image = ref('');
 
   const links = ref([
     { text: "Home", to: "/", icon: "mdi-home" },
@@ -68,9 +130,58 @@
     //then, you can pass that ProductDoc into the createItem function below
     //and it will be posted to the firestore and the app will update
 
-    myStore.createItem(prod);
-    myStore.init();
+    const prod: ProductDoc = {
+            id: id,
+            data: {
+                name: name,
+                rating: rating,
+                price: price,
+                stock: stock,
+                image: image
+            }
+        }
+
+    //myStore.createItem(prod);
+    //myStore.init();
+    createDialog.value = false;
   } 
+
+  function showCreateMenu(){
+    createDialog.value = true;
+  }
+
+  function closeCreateMenu() {
+    createDialog.value = false;
+  }
 
 </script>
 ./productStore
+
+<style scoped>
+  .product-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .product-row .v-col {
+    display: flex;
+  }
+
+  .product-row .v-card {
+    flex-grow: 1;
+  }
+
+  .product-card {
+    width: 100%; /* Ensure the card occupies full width */
+    height: 550px; /* Set a fixed height for the card */
+    margin-bottom: 10px; /* Add some margin between cards */
+  }
+  
+  .align-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    height: 100%; /* Ensure card text is centered vertically */
+  }
+</style>

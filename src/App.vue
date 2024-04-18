@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar class="bg-pink-darken-4">
       <v-toolbar-title>
-        <img :src='logo' alt="Sssnake Girls Superstore" class="logo-image" />
+        <img src="https://i.ibb.co/3SSgm7w/logo.gif" alt="Sssnake Girls Superstore" class="logo-image" />
      </v-toolbar-title>
       <v-btn class="mx-5" v-for="link in links" :key="link.text" :to="link.to">
         <v-icon>{{ link.icon }}</v-icon>
@@ -109,8 +109,6 @@
   import { onBeforeMount } from "vue";
   import StoreItem from "./components/StoreItem.vue";
   import { ProductDoc } from "./types/product";
-
-  const logo = './src/assets/logo.gif';
 
   const myStore = useItemStore();
   onBeforeMount(() => {

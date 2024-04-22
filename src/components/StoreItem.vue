@@ -49,10 +49,11 @@
                     <v-row>
                     Price: ${{ product.data.price}}
                     </v-row>
-                    <v-spacer />
+                    <v-row>
                     <v-span>
                     {{product.data.description}}
                     </v-span>
+                    </v-row>
 
                 </v-col>
                 <v-col cols="6">

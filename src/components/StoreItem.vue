@@ -46,8 +46,12 @@
                     <v-row>
                     Rating: {{ product.data.rating }}
                     </v-row>
-
-                    <!-- display other product.data here -->
+                    <v-row>
+                    Price: ${{ product.data.price}}
+                    </v-row>
+                    <v-span>
+                    {{product.data.description}}
+                    </v-span>
 
                 </v-col>
                 <v-col cols="6">

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar class="bg-pink-darken-4">
+    <v-app-bar class="bg-purple-darken-4">
       <v-toolbar-title>
         <img src="https://i.ibb.co/3SSgm7w/logo.gif" alt="Sssnake Girls Superstore" class="logo-image" />
      </v-toolbar-title>
@@ -9,7 +9,7 @@
         {{ link.text }}
       </v-btn>
     </v-app-bar>
-    <v-main class="bg-pink-lighten-5">
+    <v-main class="bg-purple-lighten-5">
 
       <!-- Create New Item Dialog -->
 
@@ -97,7 +97,7 @@
       </router-view>
     </v-main>
 
-    <v-footer class="bg-pink-darken-4" app>
+    <v-footer class="bg-purple-darken-4" app>
       © 2024 Sssnake Girls SuperStore. All rights reserved.
     </v-footer>
   </v-app>
